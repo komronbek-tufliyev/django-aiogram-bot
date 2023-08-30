@@ -1,17 +1,14 @@
 from .base import *
 # import os
-import environs
 
-env = environs.Env()
-env.read_env()
 
-environtment = env('ENVIRONMENT', 'local')
+environtment = env.str('ENVIRONMENT', 'dev')
 
 
 if environtment == 'production':
     from .prod import *
 
-elif environtment == 'local':
+elif environtment == 'development':
     # INSTALLED_APPS += [
     #     'debug_toolbar',
     # ]

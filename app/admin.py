@@ -8,6 +8,8 @@ admin.site.unregister(User)
 from .models import *
 from .translation import CategoryTranslationOptions, ProductTranslationOptions
 from modeltranslation.admin import TranslationAdmin
+from import_export.admin import ImportExportModelAdmin
+from .resources import *
 
 @admin.register(BotUser)
 class BotUserAdmin(admin.ModelAdmin):
@@ -24,17 +26,27 @@ class LocationAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 @admin.register(Category)
-class CategoryAdmin(TranslationAdmin):
+class CategoryAdmin(TranslationAdmin, ImportExportModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     list_per_page = 10
+    resource_classes = [CategoryResource]
+
+@admin.register(SubCategory)
+class SubCategoryAdmin(TranslationAdmin, ImportExportModelAdmin):
+    list_display = ('name', 'category')
+    search_fields = ('name', 'category_name')
+    # list_filter = ('category',)
+    list_per_page = 10
+    resource_classes = [SubCategoryResource]
 
 @admin.register(Product)
-class ProductAdmin(TranslationAdmin):
+class ProductAdmin(TranslationAdmin, ImportExportModelAdmin):
     list_display = ('picture', 'name', 'category', 'price', 'discount')
     search_fields = ('name', 'category', 'price', 'discount')
     list_filter = ('category', 'price', 'discount')
     list_per_page = 10
+    resource_classes = [ProductResource]
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

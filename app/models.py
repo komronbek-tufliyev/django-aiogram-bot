@@ -8,17 +8,17 @@ from django.utils.html import format_html
 class BotUser(models.Model):
     name = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Name'), help_text=_('Enter name'),)
     telegram_id = models.CharField(max_length=20, unique=True, verbose_name=_("Telegram ID"))
-    language = models.CharField(max_length=5, default='uz', verbose_name=_("Language"))
+    language = models.CharField(max_length=5, default='uz', verbose_name=_("Language"), choices=(('uz', 'Uzbek'), ('ru', 'Russian'), ('en', 'English')))
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name=_("Phone Number"))
     added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.telegram_id} ID-li foydalanuvchi"
+        return self.name if self.name else f"{self.telegram_id} ID-li foydalanuvchi"
 
     class Meta:
         db_table = 'BotUser'
-        verbose_name = "BotUser"
-        verbose_name_plural = "BotUsers"
+        verbose_name = _("BotUser")
+        verbose_name_plural = _("BotUsers")
 
 
 class Location(models.Model):
@@ -31,6 +31,10 @@ class Location(models.Model):
             return get_lat_lot(self.latitude, self.longitude)
         else:
             return "Location"
+    class Meta:
+        db_table = 'Location'
+        verbose_name = _("Location")
+        verbose_name_plural = _("Locations")
         
 
 class Category(models.Model):
@@ -43,9 +47,23 @@ class Category(models.Model):
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
 
+
+class SubCategory(models.Model):
+    name = models.CharField(max_length=150, null=True, blank=True, verbose_name=_("SubCategory"))
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        db_table= 'SubCategory'
+        verbose_name = _("SubCategory")
+        verbose_name_plural = _("SubCategories")
+    
+
 class Product(models.Model):
     name = models.CharField(max_length=150, verbose_name=_("Name"))
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name=_("Category"), help_text=_("Select Category"))
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='products', verbose_name=_("SubCategory"), null=True, blank=True, help_text=_("Select Category") )
     image = models.ImageField(upload_to='product-images', verbose_name=_("Image"), null=True, blank=True)
     about = models.TextField(null=True, blank=True, verbose_name=_("Info"))
     price  = models.IntegerField(null=True, blank=True)
@@ -61,6 +79,11 @@ class Product(models.Model):
     def picture(self):
         return format_html('<img src="{}" width="50" height="50" style="border-radius: 50%" />'.format(self.image.url))
     
+    class Meta:
+        db_table = 'Product'
+        verbose_name = _("Product")
+        verbose_name_plural = _("Products")
+    
 class Order(models.Model):
     user = models.ForeignKey(BotUser, on_delete=models.CASCADE, verbose_name=_("Bot User"), to_field='telegram_id')
     created = models.DateTimeField(auto_now_add=True)
@@ -75,6 +98,11 @@ class Order(models.Model):
     @property
     def all_shop(self):
         return sum([item.shop for item in self.items.all()])
+    
+    class Meta:
+        db_table = 'Order'
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name=_("Order"))
@@ -86,7 +114,19 @@ class OrderItem(models.Model):
     
     @property
     def shop(self):
-        return (self.product.price - self.product.discount) * self.quantity
+        if self.product.discount:
+            return (self.product.price - self.product.discount) * self.quantity
+        else:
+            return self.product.price * self.quantity
+
+    @property
+    def product_id(self):
+        return self.product.id
+
+    class Meta:
+        db_table = 'OrderItem'
+        verbose_name = _("OrderItem")
+        verbose_name_plural = _("OrderItems")
     
-    
+
     

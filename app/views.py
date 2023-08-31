@@ -5,6 +5,13 @@ from django.urls.base import resolve, reverse
 from django.urls.exceptions import Resolver404
 from django.utils import translation
 
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import filters
+
+from .serializers import *
+from .models import *
+
 def set_language(request, language):
     for lang, _ in settings.LANGUAGES:
         translation.activate(lang)
@@ -25,3 +32,47 @@ def set_language(request, language):
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
+
+
+class BotUserViewSet(viewsets.ModelViewSet):
+    serializer_class = BotUserSerializer
+    queryset = BotUser.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', ]
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', ]
+
+class SubCategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = SubCategorySerializer
+    queryset = SubCategory.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', ]
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'price', 'about' ]
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+
+
+class OrderItemViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderItemSerializer
+    queryset = OrderItem.objects.all()
+
+
+from rest_framework.views import APIView
+
+class ChangeLanguage(APIView):
+    def post(self):
+        pass
+

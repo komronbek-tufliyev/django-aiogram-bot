@@ -1,14 +1,14 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from ..latlong import get_lat_lot
-
+from latlong import get_lat_lot
+from django.utils.html import format_html
 # Create your models here.
 
 
 class BotUser(models.Model):
     name = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Name'), help_text=_('Enter name'),)
     telegram_id = models.CharField(max_length=20, unique=True, verbose_name=_("Telegram ID"))
-    language = models.CharField(max_length=5, default='uz', verbose_name=_("Language)"))
+    language = models.CharField(max_length=5, default='uz', verbose_name=_("Language"))
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name=_("Phone Number"))
     added = models.DateTimeField(auto_now_add=True)
 
@@ -34,7 +34,7 @@ class Location(models.Model):
         
 
 class Category(models.Model):
-    name = models.CharField(max_length=150, null=True, blank=True, verbose_name=_("Category)") )
+    name = models.CharField(max_length=150, null=True, blank=True, verbose_name=_("Category") )
     def __str__(self):
         return self.name
     

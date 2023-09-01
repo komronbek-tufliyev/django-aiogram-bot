@@ -151,7 +151,6 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 

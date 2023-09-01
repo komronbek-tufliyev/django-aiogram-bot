@@ -12,9 +12,14 @@ if environtment == 'production':
     from .prod import *
 
 elif environtment == 'development':
-    # INSTALLED_APPS += [
-    #     'debug_toolbar',
-    # ]
+    INSTALLED_APPS += [
+        'debug_toolbar',
+    ]
+    #~~~~~~~ DJANGO DEBUG TOOLBAR SETTINGS ~~~~~~~#
+    INTERNAL_IPS = ['127.0.0.1', '::1']
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
+    }
     from .local import *
 
 

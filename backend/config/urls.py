@@ -5,11 +5,12 @@ from django.urls import path, include
 from config import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from app.views import set_language
+from app.views import set_language, index
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('set_language/<str:language>/', set_language, name='set-language'),
+    path('', index, name='index'),
 ]
 
 urlpatterns += i18n_patterns(

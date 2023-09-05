@@ -42,20 +42,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # ~~~~~~~ Third Party Apps ~~~~~~~ #
-    ####### STORAGE #######
-    'storages',
     ####### TRANSLATION #######
     'modeltranslation',
     ####### IMPORT EXPORT #######
     'import_export',
-    ####### DJANGO JQUERY #######
+    ####### DJANGO boto3 #######
     'boto3',
     ####### DJANGO REST FRAMEWORK #######
     'rest_framework',
     ## SMart Select ##
     'smart_selects',
     ####### CREATED APP #######
-    'app',
+    'app.apps.AppConfig',
+    ####### STORAGE #######
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -141,14 +141,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # AWS S3 Bucket Settings
-
-AWS_SECRET_KEY_ID = env.str("AWS_SECRET_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_FILE_OVERWRITE = 0 # False
-AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
+
+AWS_S3_FILE_OVERWRITE = 0 # False
+AWS_DEFAULT_ACL = None
 
 
 # Internationalization

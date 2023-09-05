@@ -13,8 +13,8 @@ from .resources import *
 
 @admin.register(BotUser)
 class BotUserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'telegram_id', 'language')
-    search_fields = ('name', 'telegram_id', 'language')
+    list_display = ('name', 'telegram_id', 'language', 'telegram_username',)
+    search_fields = ('name', 'telegram_id', 'language', 'telegram_username',)
     list_filter = ('language', 'added')
     list_per_page = 10
 

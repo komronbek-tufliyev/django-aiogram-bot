@@ -1,0 +1,9 @@
+Pizza:
+    Donar pizza             Донор пицца             Donar pizza
+    Go'shtli Alfredo        Мясо Альфредо           Meat Alfredo
+    Pishloqli               Сырная                  Cheese
+    Pepperoni               Пепперони               Pepperoni
+
+Drinks:
+    Gazsiz ichimliklar      Безгазовые напитки      Non-carbonated drinks
+    Gazli ichimliklar       Газированные напитки    Carbonated drinks

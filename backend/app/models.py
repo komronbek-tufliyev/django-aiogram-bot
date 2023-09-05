@@ -6,6 +6,7 @@ from django.utils.html import format_html
 
 
 class BotUser(models.Model):
+    telegram_username = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Username'), help_text=_('Enter username'),)
     name = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Name'), help_text=_('Enter name'),)
     telegram_id = models.CharField(max_length=20, unique=True, verbose_name=_("Telegram ID"))
     language = models.CharField(max_length=5, default='uz', verbose_name=_("Language"), choices=(('uz', 'Uzbek'), ('ru', 'Russian'), ('en', 'English')))
@@ -64,7 +65,7 @@ class Product(models.Model):
     name = models.CharField(max_length=150, verbose_name=_("Name"))
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name=_("Category"), help_text=_("Select Category"))
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='products', verbose_name=_("SubCategory"), null=True, blank=True, help_text=_("Select Category") )
-    image = models.ImageField(upload_to='product-images', verbose_name=_("Image"), null=True, blank=True)
+    image = models.ImageField(upload_to='product_images', verbose_name="Image", null=True, blank=True)
     about = models.TextField(null=True, blank=True, verbose_name=_("Info"))
     price  = models.IntegerField(null=True, blank=True)
     discount = models.IntegerField(verbose_name=_("Discount"), null=True, blank=True)
@@ -77,8 +78,10 @@ class Product(models.Model):
         
     @property
     def picture(self):
-        return format_html('<img src="{}" width="50" height="50" style="border-radius: 50%" />'.format(self.image.url))
-    
+        if self.image:
+            return format_html('<img src="{}" width="50" height="50" style="border-radius: 50%" />'.format(self.image.url))
+        else:
+            return "Rasm"
     class Meta:
         db_table = 'Product'
         verbose_name = _("Product")
@@ -114,10 +117,13 @@ class OrderItem(models.Model):
     
     @property
     def shop(self):
-        if self.product.discount:
-            return (self.product.price - self.product.discount) * self.quantity
-        else:
-            return self.product.price * self.quantity
+        try: 
+            if self.product.discount:
+                return (self.product.price - self.product.discount) * self.quantity
+            else:
+                return self.product.price * self.quantity
+        except:
+            return 0
 
     @property
     def product_id(self):

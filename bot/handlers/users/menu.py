@@ -6,6 +6,10 @@ from aiogram.types.input_media import InputMediaPhoto
 from keyboards.default.buttons import *
 from loader import dp, bot
 from api import *
+from pprint import pprint
+
+
+
 
 
 @dp.message_handler(text=["❌ Отменить", "❌ Bekor qilish", "❌ Cancel"])
@@ -21,7 +25,7 @@ async def cancel_function(message: types.Message):
         await message.answer("✅ Welcome to the main menu\n"\
                 f"🍕 Delicious pizza! Shall we start ordering?", reply_markup=main_en)
         
-@dp.message_handler(Text(startswith=["🍕", "🍵", "🍞", "🍰", "🧃"]))
+@dp.message_handler(text=["⬇️"])
 async def subcategory_products(message: types.Message, state: FSMContext):
     await message.answer("Ok")
     await state.update_data(
@@ -36,6 +40,7 @@ async def subcategory_products(message: types.Message, state: FSMContext):
         msg = "No items found" if language == 'en' else "Mahsulotlar topilmadi" if language == 'uz' else "Товары не найдены"
         await message.answer(msg)
         return
+    pprint({"datas": datas})
     data = datas[0]
     print(data)
     money = "so'm" if language == 'uz' else "сум" if language == 'ru' else "sum"
@@ -49,6 +54,8 @@ async def subcategory_products(message: types.Message, state: FSMContext):
         button.row(KeyboardButton(text="⬅️ Back"), KeyboardButton(text="🛒 Basket"))
     await message.answer(f"⬇️", reply_markup=button)
     await message.answer_photo(photo=data['image'], caption=f"<b>{data['name']}</b>\n\n{price}: {data['price']} {money}", reply_markup=product_button(data=data, language=language))
+
+
 
 
 ########### Function for Back Button ###########
@@ -111,6 +118,7 @@ async def category(message: types.Message, state:FSMContext):
     await state.update_data(
         {
             'level': 'category',
+            'count': 1,
         }
     )
     telegram_id = message.from_user.id
@@ -128,13 +136,22 @@ async def category(message: types.Message, state:FSMContext):
 async def category_product(message: types.Message, state: FSMContext):
     language = language_info(telegram_id=message.from_user.id)
     category = category_info(language=language, category=message.text)
+    # print("category product function ", category)
+    state_data = await state.get_data()
+    count = state_data.get('count', 0)
+    print("count", count)
     if 'subcategory' in category:
-        await message.answer("⬇️", reply_markup=product_or_subcategory(category=message.text, language=language))
+        await message.answer("⬇️", reply_markup=product_or_subcategory(category=message.text, language=language, ))
+    else:
         await state.update_data(
             {
                 'level': 'product-category',
             }
         )
+        if category['products'] == []:
+            msg = "No items found" if language == 'en' else "Mahsulotlar topilmadi" if language == 'uz' else "Товары не найдены"
+            await message.answer(msg)
+            return
         data = category['products'][0]
         money = "so'm" if language == 'uz' else "сум" if language == 'ru' else "sum"
         price = "💰 Narxi: " if language == 'uz' else "💰 Цена: " if language == 'ru' else "💰 Price: "
@@ -147,15 +164,17 @@ async def category_product(message: types.Message, state: FSMContext):
         elif language == 'en':
             button.row(KeyboardButton(text="⬅️ Back"), KeyboardButton(text="🛒 Basket"))
         await message.answer(f"⬇️", reply_markup=button)
-        await message.answer_photo(photo=data['image'], caption=f"<b>{data['name']}</b>\n\n{price}: {data['price']} {money}", reply_markup=product_or_subcategory(category=message.text, language=language, product=data['id']))
+        await message.answer_photo(photo=data['image'], caption=f"<b>{data['name']}</b>\n\n{price}: {data['price']} {money}", reply_markup=product_or_subcategory(category=message.text, language=language, product=data['id'], count=count))
 
 ####### Show Product ########
-@dp.callback_query_handler(callback.filter())
+@dp.callback_query_handler(callback.filter() & basket_callback.filter())
 async def decrease(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await call.answer(cache_time=60)
+    print(call.data)
     data = callback_data
     language = language_info(telegram_id=call.from_user.id)
 
+    print(f"Menu {data['action']} function {data}")
     if data['action'] == 'next':
         money = "so'm" if language == 'uz' else "сум" if language == 'ru' else "sum"
         price = "💰 Narxi: " if language == 'uz' else "💰 Цена: " if language == 'ru' else "💰 Price: "
@@ -165,37 +184,52 @@ async def decrease(call: types.CallbackQuery, callback_data: dict, state: FSMCon
         money = "so'm" if language == 'uz' else "сум" if language == 'ru' else "sum"
         price = "💰 Narxi: " if language == 'uz' else "💰 Цена: " if language == 'ru' else "💰 Price: "
         count = int(data['count']) + 1
+        await state.update_data(
+            {
+                'count': count,
+            }
+        )
+
         product = get_product(id=data['product'], language=language)
         if language == 'uz':
-            await call.answer(f"{int(data['count']+1)} ta")
+            await call.answer(f"{int(data['count'])+1} ta")
         elif language == 'ru':
-            await call.answer(f"{int(data['count']+1)} шт")
+            await call.answer(f"{int(data['count'])+1} шт")
         elif language == 'en':
-            await call.answer(f"{int(data['count']+1)} pcs")
+            await call.answer(f"{int(data['count'])+1} pcs")
 
         await call.message.edit_media(media=InputMediaPhoto(media=product['image'], caption=f"<b>{product['name']}</b>\n\n{price}: {product['price']} {money}"), reply_markup=to_product(language=language, product=int(data['product']), count=count))
     if data['action'] == 'decrease':
         money = "so'm" if language == 'uz' else "сум" if language == 'ru' else "sum"
         price = "💰 Narxi: " if language == 'uz' else "💰 Цена: " if language == 'ru' else "💰 Price: "
         count = int(data['count']) - 1 if int(data['count']) > 1 else 1
+        await state.update_data(
+            {
+                'count': count,
+            }
+        )
         product = get_product(id=data['product'], language=language)
         if language == 'uz':
-            await call.answer(f"{int(data['count']-1)} ta")
+            await call.answer(f"{int(data['count'])-1} ta")
         elif language == 'ru':
-            await call.answer(f"{int(data['count']-1)} шт")
+            await call.answer(f"{int(data['count'])-1} шт")
         elif language == 'en':
-            await call.answer(f"{int(data['count']-1)} pcs")
+            await call.answer(f"{int(data['count'])-1} pcs")
         await call.message.edit_media(media=InputMediaPhoto(media=product['image'], caption=f"<b>{product['name']}</b>\n\n{price}: {product['price']} {money}"), reply_markup=to_product(language=language, product=int(data['product']), count=count))
 
     if data['action'] == 'add':
+        print("ONasini emsin", data)
         telegram_id = call.from_user.id
         quantity = int(data['count'])
+        print("quantity", quantity)
+        print("count", await state.get_data().get('count', None))
         product = int(data['product'])
         await call.message.delete()
         set_order(telegram_id=telegram_id, product=product, quantity=quantity)
         await state.update_data(
             {
                 'level': 'category',
+                'count': 0,
             }
         )
         if language == 'uz':

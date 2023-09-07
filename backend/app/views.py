@@ -48,8 +48,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'subcategories__name', 'name_uz', 'subcategories__name_uz', 'name_ru', 'subcategories__name_ru', 'name_en', 'subcategories__name_en']
 
-    def filter_queryset(self, queryset):
-        return super().filter_queryset(queryset).prefetch_related('subcategories')
+    # def filter_queryset(self, queryset):
+    #     return super().filter_queryset(queryset).prefetch_related('subcategories')
     
     # def get_queryset(self):
     #     queryset = Category.objects.all()

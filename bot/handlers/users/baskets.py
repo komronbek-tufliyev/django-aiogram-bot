@@ -60,7 +60,7 @@ async def query(call: types.CallbackQuery, callback_data: dict):
         await call.message.delete()
     if data['action'] == 'delete':
         product = data['product']
-        delete_item(telegram_id=call.from_user.id,product=product)
+        delete_item(telegram_id=call.from_user.id, product=product)
         shop = shop_info(telegram_id=call.from_user.id, language=language)
         if shop[0]['items'] == []:
             await call.message.delete()

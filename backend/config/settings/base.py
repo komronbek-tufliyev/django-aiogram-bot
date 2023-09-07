@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     # ~~~~~~~ Third Party Apps ~~~~~~~ #
     ####### TRANSLATION #######
     'modeltranslation',
+    #  Django filters
+    'django_filters',
     ####### IMPORT EXPORT #######
     'import_export',
     ####### DJANGO boto3 #######
@@ -150,6 +152,11 @@ AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
 
 AWS_S3_FILE_OVERWRITE = 0 # False
 AWS_DEFAULT_ACL = None
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 10
+}
 
 
 # Internationalization

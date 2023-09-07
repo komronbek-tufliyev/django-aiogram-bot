@@ -6,9 +6,11 @@ from loader import dp
 
 @dp.message_handler(CommandHelp())
 async def bot_help(message: types.Message):
-    text = ("Qanday yordam kerak?",
-            "Buyruqlar: ",
-            "/start - Botni ishga tushirish",
-            "/help - Yordam")
+#     uz/ru/en
+
+    text = ("Qanday yordam kerak? / Какая помощь нужна? / What help do you need?",
+            "Buyruqlar: / Команды: / Commands:",
+            "/start - Botni ishga tushirish / Запустить бота / Start the bot",
+            "/help - Yordam / Помощь / Help",) 
     
     await message.answer("\n".join(text))

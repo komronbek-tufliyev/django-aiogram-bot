@@ -4,10 +4,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls.base import resolve, reverse
 from django.urls.exceptions import Resolver404
 from django.utils import translation
-
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import filters
+# from django_filters import rest_framework as filters
 
 from .serializers import *
 from .models import *
@@ -45,14 +46,33 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', ]
+    search_fields = ['name', 'subcategories__name', 'name_uz', 'subcategories__name_uz', 'name_ru', 'subcategories__name_ru', 'name_en', 'subcategories__name_en']
+
+    def filter_queryset(self, queryset):
+        return super().filter_queryset(queryset).prefetch_related('subcategories')
+    
+    # def get_queryset(self):
+    #     queryset = Category.objects.all()
+    #     category = self.request.query_params.get('q', None)
+    #     if category is not None:
+    #         queryset = queryset.filter(category=category)
+    #     return queryset
+    
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = SubCategorySerializer
     queryset = SubCategory.objects.all()
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', ]
+    search_fields = ['name', 'category__name', 'name_uz', 'category__name_uz', 'name_ru', 'category__name_ru', 'name_en', 'category__name_en']
 
+    def filter_queryset(self, queryset):
+        # SubCategory.refresh_from_db()
+        term = self.request.query_params.get('search', None)
+        print(term)
+        print(SubCategory.objects.all())
+        result = SubCategory.objects.filter(category__name__contains=term)
+        print(result)
+        return result
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
@@ -75,11 +95,17 @@ from rest_framework.views import APIView
 
 class ChangeLanguage(APIView):
     def post(self, request):
-        data = request.POST
-        data = data.dict()
-        telegram_id = data.get('telegram_id')
-        user = BotUser.objects.get(telegram_id=telegram_id)
-        user.language = data.get('language')
+        if not request.method == 'POST':
+            return Response({'status': 'Method not allowed!'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        data = request.data
+        telegram_id = data.get('telegram_id', None)
+        
+        try:
+            user = BotUser.objects.get(telegram_id=telegram_id)
+        except BotUser.DoesNotExist:
+            return Response({'status': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        user.language = data.get('language', user.language)
         user.save()
         return Response({'status': 'Language changed!'})
     

@@ -7,21 +7,21 @@ callback = CallbackData('mykb', 'action', 'count', 'product')
 choose_language = ReplyKeyboardMarkup(resize_keyboard=True)
 choose_language.insert(KeyboardButton('🇺🇿 O\'zbekcha')).insert(KeyboardButton('🇷🇺 Русский')).insert(KeyboardButton('🇬🇧 English'))
 main_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-main_uz.insert(KeyboardButton(text="📝 Menu")).row(KeyboardButton(text="📖 Buyurtmalarim"), KeyboardButton(text="📥 Savat"), KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="✍️ Sharh qoldiring"))
+main_uz.insert(KeyboardButton(text="📝 Menyu")).row(KeyboardButton(text="📖 Buyurtmalarim"), KeyboardButton(text="🛒 Savat"), KeyboardButton(text="⚙️ Sozlamalar"), KeyboardButton(text="✍️ Sharh qoldiring"))
 main_ru = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-main_ru.insert(KeyboardButton(text="📝 Меню")).row(KeyboardButton(text="📖 Мои заказы"), KeyboardButton(text="📥 Корзина"), KeyboardButton(text="⚙️ Настройки"), KeyboardButton(text="✍️ Оставить отзыв"))
+main_ru.insert(KeyboardButton(text="📝 Меню")).row(KeyboardButton(text="📖 Мои заказы"), KeyboardButton(text="🛒 Корзина"), KeyboardButton(text="⚙️ Настройки"), KeyboardButton(text="✍️ Оставить отзыв"))
 main_en = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-main_en.insert(KeyboardButton(text="📝 Menu")).row(KeyboardButton(text="📖 My orders"), KeyboardButton(text="📥 Basket"), KeyboardButton(text="⚙️ Settings"), KeyboardButton(text="✍️ Leave feedback"))
+main_en.insert(KeyboardButton(text="📝 Menu")).row(KeyboardButton(text="📖 My orders"), KeyboardButton(text="🛒 Basket"), KeyboardButton(text="⚙️ Settings"), KeyboardButton(text="✍️ Leave a feedback"))
 
 
 def categories(language):
     button = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     if language == 'uz':
-        button.row(KeyboardButton(text="⬅️ Orqaga"), KeyboardButton(text="📥 Savat"))
+        button.row(KeyboardButton(text="⬅️ Orqaga"), KeyboardButton(text="🛒 Savat"))
     elif language == 'ru':
-        button.row(KeyboardButton(text="⬅️ Назад"), KeyboardButton(text="📥 Корзина"))
+        button.row(KeyboardButton(text="⬅️ Назад"), KeyboardButton(text="🛒 Корзина"))
     else:
-        button.row(KeyboardButton(text="⬅️ Back"), KeyboardButton(text="📥 Basket"))
+        button.row(KeyboardButton(text="⬅️ Back"), KeyboardButton(text="🛒 Basket"))
     categories = get_categories(language)
     for i in categories:
         button.insert(KeyboardButton(text=i))
@@ -33,11 +33,11 @@ def product_or_subcategory(category, language, product=None):
     if 'subcategory' in data:
         button = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         if language == 'uz':
-            button.row(KeyboardButton(text="⬅️ Orqaga"), KeyboardButton(text="📥 Savat"))
+            button.row(KeyboardButton(text="⬅️ Orqaga"), KeyboardButton(text="🛒 Savat"))
         elif language == 'ru':
-            button.row(KeyboardButton(text="⬅️ Назад"), KeyboardButton(text="📥 Корзина"))
+            button.row(KeyboardButton(text="⬅️ Назад"), KeyboardButton(text="🛒 Корзина"))
         else:
-            button.row(KeyboardButton(text="⬅️ Back"), KeyboardButton(text="📥 Basket"))
+            button.row(KeyboardButton(text="⬅️ Back"), KeyboardButton(text="🛒 Basket"))
         for i in data['subcategory']:
             button.insert(KeyboardButton(text=i))
         return button
@@ -54,13 +54,13 @@ def product_or_subcategory(category, language, product=None):
         )
         if language == 'ru':
             # add to basket
-            button.add(InlineKeyboardButton(text="📥 Добавить в корзину", callback_data=basket_callback.new(action='add', product=data[0]['id'])))
+            button.add(InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=basket_callback.new(action='add', product=data[0]['id'])))
         elif language == 'en':
             # add to basket
-            button.add(InlineKeyboardButton(text="📥 Add to basket", callback_data=basket_callback.new(action='add', product=data[0]['id'])))
+            button.add(InlineKeyboardButton(text="🛒 Add to basket", callback_data=basket_callback.new(action='add', product=data[0]['id'])))
         else:
             # savatga qo'shish
-            button.add(InlineKeyboardButton(text="📥 Savatga qo'shish", callback_data=basket_callback.new(action='add', product=data[0]['id'])))
+            button.add(InlineKeyboardButton(text="🛒 Savatga qo'shish", callback_data=basket_callback.new(action='add', product=data[0]['id'])))
         return button
 
 
@@ -73,11 +73,11 @@ def product(language, product, count):
         InlineKeyboardButton(text=f"+", callback_data=callback.new('increase'))
     )
     if language == 'ru':
-        button.add(InlineKeyboardButton(text="📥 Добавить в корзину", callback_data=basket_callback.new(action='add', product=product)))
+        button.add(InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=basket_callback.new(action='add', product=product)))
     elif language == 'en':
-        button.add(InlineKeyboardButton(text="📥 Add to basket", callback_data=basket_callback.new(action='add', product=product)))
+        button.add(InlineKeyboardButton(text="🛒 Add to basket", callback_data=basket_callback.new(action='add', product=product)))
     else:
-        button.add(InlineKeyboardButton(text="📥 Savatga qo'shish", callback_data=basket_callback.new(action='add', product=product)))
+        button.add(InlineKeyboardButton(text="🛒 Savatga qo'shish", callback_data=basket_callback.new(action='add', product=product)))
 
     return button
 
@@ -154,10 +154,48 @@ def getcontact(language):
 
 
 
+# ############## Product Button ##############
+# def product_button(data, language):
+#     button = InlineKeyboardMarkup()
+#     print("data", data)
+#     if not len(data) > 1:
+#         return button
+#     product = data[0]['product']
+#     if len(data) > 1:
+#         for i in data[1:]:
+#             button.add(InlineKeyboardButton(text=f"{i['name']} - {i['price']}", callback_data=basket_callback.new(action='next', product=i['id'])))
+#     button.row(
+#         InlineKeyboardButton(text=f"-", callback_data=callback.new('decrease')),
+#         InlineKeyboardButton(text=f"{product['count']}", callback_data=product['count']),
+#         InlineKeyboardButton(text=f"+", callback_data=callback.new('increase'))
+#     )
+
+#     if language == 'ru':
+#         button.add(InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
+#     elif language == 'en':
+#         button.add(InlineKeyboardButton(text="🛒 Add to basket", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
+#     else:
+#         button.add(InlineKeyboardButton(text="🛒 Savatga qo'shish", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
+
+#     return button
 ############## Product Button ##############
 def product_button(data, language):
-    button = InlineKeyboardMarkup()
-    product = data[0]['product']
+    button = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=f"-", callback_data=callback.new('decrease')),
+                InlineKeyboardButton(text=f"{data[0]['count']}", callback_data=data[0]['count']),
+                InlineKeyboardButton(text=f"+", callback_data=callback.new('increase'))
+            ],
+            [
+                InlineKeyboardButton(text="🛒 Savatga qo'shish", callback_data=basket_callback.new(action='add', count=1, product=data[0]['id']))
+            ]
+        ]
+    )
+    print("data", data)
+    if not len(data) > 1:
+        return button
+    product = data[0]
     if len(data) > 1:
         for i in data[1:]:
             button.add(InlineKeyboardButton(text=f"{i['name']} - {i['price']}", callback_data=basket_callback.new(action='next', product=i['id'])))
@@ -168,11 +206,11 @@ def product_button(data, language):
     )
 
     if language == 'ru':
-        button.add(InlineKeyboardButton(text="📥 Добавить в корзину", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
+        button.add(InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
     elif language == 'en':
-        button.add(InlineKeyboardButton(text="📥 Add to basket", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
+        button.add(InlineKeyboardButton(text="🛒 Add to basket", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
     else:
-        button.add(InlineKeyboardButton(text="📥 Savatga qo'shish", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
+        button.add(InlineKeyboardButton(text="🛒 Savatga qo'shish", callback_data=basket_callback.new(action='add', count=1, product=product['id'])))
 
     return button
 
@@ -214,16 +252,16 @@ def mylocation(language):
 def gettype(language):
     button = ReplyKeyboardMarkup(resize_keyboard=True, )
     if language == 'uz':
-        button.add(KeyboardButton(text="🏃‍♂️ Olib ketish"))
-        button.add(KeyboardButton(text="🚕 Yetkazish"))
+        button.add(KeyboardButton(text="🚶 Olib ketish"))
+        button.add(KeyboardButton(text="🚗 Yetkazish"))
         button.row(KeyboardButton(text="❌ Bekor qilish"))
     elif language == 'ru':
-        button.add(KeyboardButton(text="🏃‍♂️ Самовывоз"))
-        button.add(KeyboardButton(text="🚕 Доставка"))
+        button.add(KeyboardButton(text="🚶 С собой"))
+        button.add(KeyboardButton(text="🚗 Доставка"))
         button.row(KeyboardButton(text="❌ Отменить"))
     else:
-        button.add(KeyboardButton(text="🏃‍♂️ Pick up"))
-        button.add(KeyboardButton(text="🚕 Delivery"))
+        button.add(KeyboardButton(text="🚶 To go"))
+        button.add(KeyboardButton(text="🚗 Delivery"))
         button.row(KeyboardButton(text="❌ Cancel"))
     
     return button

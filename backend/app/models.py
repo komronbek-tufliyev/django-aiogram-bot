@@ -8,7 +8,7 @@ from django.utils.html import format_html
 class BotUser(models.Model):
     telegram_username = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Username'), help_text=_('Enter username'),)
     name = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Name'), help_text=_('Enter name'),)
-    telegram_id = models.CharField(max_length=20, unique=True, verbose_name=_("Telegram ID"))
+    telegram_id = models.IntegerField(unique=True, verbose_name=_("Telegram ID"), db_index=True, help_text=_("Enter Telegram ID"))
     language = models.CharField(max_length=5, default='uz', verbose_name=_("Language"), choices=(('uz', 'Uzbek'), ('ru', 'Russian'), ('en', 'English')))
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name=_("Phone Number"))
     added = models.DateTimeField(auto_now_add=True)
